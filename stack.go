@@ -24,6 +24,7 @@ type Stack struct {
 func OpenStack(dataDir string) (*Stack, error) {
 	var err error
 
+	gob.Register(map[string]interface{}{})
 	// Create a new Stack.
 	s := &Stack{
 		DataDir: dataDir,
