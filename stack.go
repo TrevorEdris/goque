@@ -16,7 +16,7 @@ type Stack struct {
 	db      *leveldb.DB
 	head    uint64
 	tail    uint64
-	isOpen  bool
+	IsOpen  bool
 }
 
 // OpenStack opens a stack if one exists at the given directory. If one
@@ -30,7 +30,7 @@ func OpenStack(dataDir string) (*Stack, error) {
 		db:      &leveldb.DB{},
 		head:    0,
 		tail:    0,
-		isOpen:  false,
+		IsOpen:  false,
 	}
 
 	// Open database for the stack.
@@ -48,8 +48,8 @@ func OpenStack(dataDir string) (*Stack, error) {
 		return s, ErrIncompatibleType
 	}
 
-	// Set isOpen and return.
-	s.isOpen = true
+	// Set IsOpen and return.
+	s.IsOpen = true
 	return s, s.init()
 }
 
@@ -59,7 +59,7 @@ func (s *Stack) Push(value []byte) (*Item, error) {
 	defer s.Unlock()
 
 	// Check if stack is closed.
-	if !s.isOpen {
+	if !s.IsOpen {
 		return nil, ErrDBClosed
 	}
 
@@ -105,7 +105,7 @@ func (s *Stack) Pop() (*Item, error) {
 	defer s.Unlock()
 
 	// Check if stack is closed.
-	if !s.isOpen {
+	if !s.IsOpen {
 		return nil, ErrDBClosed
 	}
 
@@ -132,7 +132,7 @@ func (s *Stack) Peek() (*Item, error) {
 	defer s.RUnlock()
 
 	// Check if stack is closed.
-	if !s.isOpen {
+	if !s.IsOpen {
 		return nil, ErrDBClosed
 	}
 
@@ -146,7 +146,7 @@ func (s *Stack) PeekByOffset(offset uint64) (*Item, error) {
 	defer s.RUnlock()
 
 	// Check if stack is closed.
-	if !s.isOpen {
+	if !s.IsOpen {
 		return nil, ErrDBClosed
 	}
 
@@ -159,7 +159,7 @@ func (s *Stack) PeekByID(id uint64) (*Item, error) {
 	defer s.RUnlock()
 
 	// Check if stack is closed.
-	if !s.isOpen {
+	if !s.IsOpen {
 		return nil, ErrDBClosed
 	}
 
@@ -172,7 +172,7 @@ func (s *Stack) Update(id uint64, newValue []byte) (*Item, error) {
 	defer s.Unlock()
 
 	// Check if stack is closed.
-	if !s.isOpen {
+	if !s.IsOpen {
 		return nil, ErrDBClosed
 	}
 
@@ -225,7 +225,7 @@ func (s *Stack) Close() error {
 	defer s.Unlock()
 
 	// Check if stack is already closed.
-	if !s.isOpen {
+	if !s.IsOpen {
 		return nil
 	}
 
@@ -235,10 +235,10 @@ func (s *Stack) Close() error {
 	}
 
 	// Reset stack head and tail and set
-	// isOpen to false.
+	// IsOpen to false.
 	s.head = 0
 	s.tail = 0
-	s.isOpen = false
+	s.IsOpen = false
 
 	return nil
 }

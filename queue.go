@@ -16,7 +16,7 @@ type Queue struct {
 	db      *leveldb.DB
 	head    uint64
 	tail    uint64
-	isOpen  bool
+	IsOpen  bool
 }
 
 // OpenQueue opens a queue if one exists at the given directory. If one
@@ -30,7 +30,7 @@ func OpenQueue(dataDir string) (*Queue, error) {
 		db:      &leveldb.DB{},
 		head:    0,
 		tail:    0,
-		isOpen:  false,
+		IsOpen:  false,
 	}
 
 	// Open database for the queue.
@@ -48,8 +48,8 @@ func OpenQueue(dataDir string) (*Queue, error) {
 		return q, ErrIncompatibleType
 	}
 
-	// Set isOpen and return.
-	q.isOpen = true
+	// Set IsOpen and return.
+	q.IsOpen = true
 	return q, q.init()
 }
 
@@ -59,7 +59,7 @@ func (q *Queue) Enqueue(value []byte) (*Item, error) {
 	defer q.Unlock()
 
 	// Check if queue is closed.
-	if !q.isOpen {
+	if !q.IsOpen {
 		return nil, ErrDBClosed
 	}
 
@@ -105,7 +105,7 @@ func (q *Queue) Dequeue() (*Item, error) {
 	defer q.Unlock()
 
 	// Check if queue is closed.
-	if !q.isOpen {
+	if !q.IsOpen {
 		return nil, ErrDBClosed
 	}
 
@@ -132,7 +132,7 @@ func (q *Queue) Peek() (*Item, error) {
 	defer q.RUnlock()
 
 	// Check if queue is closed.
-	if !q.isOpen {
+	if !q.IsOpen {
 		return nil, ErrDBClosed
 	}
 
@@ -146,7 +146,7 @@ func (q *Queue) PeekByOffset(offset uint64) (*Item, error) {
 	defer q.RUnlock()
 
 	// Check if queue is closed.
-	if !q.isOpen {
+	if !q.IsOpen {
 		return nil, ErrDBClosed
 	}
 
@@ -159,7 +159,7 @@ func (q *Queue) PeekByID(id uint64) (*Item, error) {
 	defer q.RUnlock()
 
 	// Check if queue is closed.
-	if !q.isOpen {
+	if !q.IsOpen {
 		return nil, ErrDBClosed
 	}
 
@@ -172,7 +172,7 @@ func (q *Queue) Update(id uint64, newValue []byte) (*Item, error) {
 	defer q.Unlock()
 
 	// Check if queue is closed.
-	if !q.isOpen {
+	if !q.IsOpen {
 		return nil, ErrDBClosed
 	}
 
@@ -225,7 +225,7 @@ func (q *Queue) Close() error {
 	defer q.Unlock()
 
 	// Check if queue is already closed.
-	if !q.isOpen {
+	if !q.IsOpen {
 		return nil
 	}
 
@@ -235,10 +235,10 @@ func (q *Queue) Close() error {
 	}
 
 	// Reset queue head and tail and set
-	// isOpen to false.
+	// IsOpen to false.
 	q.head = 0
 	q.tail = 0
-	q.isOpen = false
+	q.IsOpen = false
 
 	return nil
 }

@@ -3,7 +3,7 @@ package goque_test
 import (
 	"fmt"
 
-	"github.com/beeker1121/goque"
+	"github.com/TrevorEdris/goque"
 )
 
 // ExampleObject demonstrates enqueuing a struct object.

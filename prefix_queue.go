@@ -34,7 +34,7 @@ type PrefixQueue struct {
 	DataDir string
 	db      *leveldb.DB
 	size    uint64
-	isOpen  bool
+	IsOpen  bool
 }
 
 // OpenPrefixQueue opens a prefix queue if one exists at the given directory.
@@ -46,7 +46,7 @@ func OpenPrefixQueue(dataDir string) (*PrefixQueue, error) {
 	pq := &PrefixQueue{
 		DataDir: dataDir,
 		db:      &leveldb.DB{},
-		isOpen:  false,
+		IsOpen:  false,
 	}
 
 	// Open database for the prefix queue.
@@ -64,8 +64,8 @@ func OpenPrefixQueue(dataDir string) (*PrefixQueue, error) {
 		return nil, ErrIncompatibleType
 	}
 
-	// Set isOpen and return.
-	pq.isOpen = true
+	// Set IsOpen and return.
+	pq.IsOpen = true
 	return pq, pq.init()
 }
 
@@ -75,7 +75,7 @@ func (pq *PrefixQueue) Enqueue(prefix, value []byte) (*Item, error) {
 	defer pq.Unlock()
 
 	// Check if queue is closed.
-	if !pq.isOpen {
+	if !pq.IsOpen {
 		return nil, ErrDBClosed
 	}
 
@@ -138,7 +138,7 @@ func (pq *PrefixQueue) Dequeue(prefix []byte) (*Item, error) {
 	defer pq.Unlock()
 
 	// Check if queue is closed.
-	if !pq.isOpen {
+	if !pq.IsOpen {
 		return nil, ErrDBClosed
 	}
 
@@ -188,7 +188,7 @@ func (pq *PrefixQueue) Peek(prefix []byte) (*Item, error) {
 	defer pq.RUnlock()
 
 	// Check if queue is closed.
-	if !pq.isOpen {
+	if !pq.IsOpen {
 		return nil, ErrDBClosed
 	}
 
@@ -213,7 +213,7 @@ func (pq *PrefixQueue) PeekByID(prefix []byte, id uint64) (*Item, error) {
 	defer pq.RUnlock()
 
 	// Check if queue is closed.
-	if !pq.isOpen {
+	if !pq.IsOpen {
 		return nil, ErrDBClosed
 	}
 
@@ -232,7 +232,7 @@ func (pq *PrefixQueue) Update(prefix []byte, id uint64, newValue []byte) (*Item,
 	defer pq.Unlock()
 
 	// Check if queue is closed.
-	if !pq.isOpen {
+	if !pq.IsOpen {
 		return nil, ErrDBClosed
 	}
 
@@ -291,7 +291,7 @@ func (pq *PrefixQueue) Close() error {
 	defer pq.Unlock()
 
 	// Check if queue is already closed.
-	if !pq.isOpen {
+	if !pq.IsOpen {
 		return nil
 	}
 
@@ -300,9 +300,9 @@ func (pq *PrefixQueue) Close() error {
 		return err
 	}
 
-	// Reset size and set isOpen to false.
+	// Reset size and set IsOpen to false.
 	pq.size = 0
-	pq.isOpen = false
+	pq.IsOpen = false
 
 	return nil
 }

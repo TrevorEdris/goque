@@ -43,7 +43,7 @@ type PriorityQueue struct {
 	order    order
 	levels   [256]*priorityLevel
 	curLevel uint8
-	isOpen   bool
+	IsOpen   bool
 }
 
 // OpenPriorityQueue opens a priority queue if one exists at the given
@@ -57,7 +57,7 @@ func OpenPriorityQueue(dataDir string, order order) (*PriorityQueue, error) {
 		DataDir: dataDir,
 		db:      &leveldb.DB{},
 		order:   order,
-		isOpen:  false,
+		IsOpen:  false,
 	}
 
 	// Open database for the priority queue.
@@ -75,8 +75,8 @@ func OpenPriorityQueue(dataDir string, order order) (*PriorityQueue, error) {
 		return pq, ErrIncompatibleType
 	}
 
-	// Set isOpen and return.
-	pq.isOpen = true
+	// Set IsOpen and return.
+	pq.IsOpen = true
 	return pq, pq.init()
 }
 
@@ -86,7 +86,7 @@ func (pq *PriorityQueue) Enqueue(priority uint8, value []byte) (*PriorityItem, e
 	defer pq.Unlock()
 
 	// Check if queue is closed.
-	if !pq.isOpen {
+	if !pq.IsOpen {
 		return nil, ErrDBClosed
 	}
 
@@ -141,7 +141,7 @@ func (pq *PriorityQueue) Dequeue() (*PriorityItem, error) {
 	defer pq.Unlock()
 
 	// Check if queue is closed.
-	if !pq.isOpen {
+	if !pq.IsOpen {
 		return nil, ErrDBClosed
 	}
 
@@ -169,7 +169,7 @@ func (pq *PriorityQueue) DequeueByPriority(priority uint8) (*PriorityItem, error
 	defer pq.Unlock()
 
 	// Check if queue is closed.
-	if !pq.isOpen {
+	if !pq.IsOpen {
 		return nil, ErrDBClosed
 	}
 
@@ -196,7 +196,7 @@ func (pq *PriorityQueue) Peek() (*PriorityItem, error) {
 	defer pq.RUnlock()
 
 	// Check if queue is closed.
-	if !pq.isOpen {
+	if !pq.IsOpen {
 		return nil, ErrDBClosed
 	}
 
@@ -210,7 +210,7 @@ func (pq *PriorityQueue) PeekByOffset(offset uint64) (*PriorityItem, error) {
 	defer pq.RUnlock()
 
 	// Check if queue is closed.
-	if !pq.isOpen {
+	if !pq.IsOpen {
 		return nil, ErrDBClosed
 	}
 
@@ -234,7 +234,7 @@ func (pq *PriorityQueue) PeekByPriorityID(priority uint8, id uint64) (*PriorityI
 	defer pq.RUnlock()
 
 	// Check if queue is closed.
-	if !pq.isOpen {
+	if !pq.IsOpen {
 		return nil, ErrDBClosed
 	}
 
@@ -248,7 +248,7 @@ func (pq *PriorityQueue) Update(priority uint8, id uint64, newValue []byte) (*Pr
 	defer pq.Unlock()
 
 	// Check if queue is closed.
-	if !pq.isOpen {
+	if !pq.IsOpen {
 		return nil, ErrDBClosed
 	}
 
@@ -310,7 +310,7 @@ func (pq *PriorityQueue) Close() error {
 	defer pq.Unlock()
 
 	// Check if queue is already closed.
-	if !pq.isOpen {
+	if !pq.IsOpen {
 		return nil
 	}
 
@@ -320,12 +320,12 @@ func (pq *PriorityQueue) Close() error {
 	}
 
 	// Reset head and tail of each priority level
-	// and set isOpen to false.
+	// and set IsOpen to false.
 	for i := 0; i <= 255; i++ {
 		pq.levels[uint8(i)].head = 0
 		pq.levels[uint8(i)].tail = 0
 	}
-	pq.isOpen = false
+	pq.IsOpen = false
 
 	return nil
 }
